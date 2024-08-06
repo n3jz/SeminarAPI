@@ -12,7 +12,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Predelamo JSON ki ga dobimo. 
+// Predelamo JSON ki ga dobimoo 
 $inputJSON = file_get_contents('php://input');
 $input = json_decode($inputJSON, true);
 
