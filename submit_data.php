@@ -19,7 +19,6 @@ $input = json_decode($inputJSON, true);
 // V eni zahtevi pošljemo podatke za samo eno zgradbo.
 $p_building_name = $input['building_name'];
 $p_building_location = $input['building_location'];
-
 $results = [];
 
 // Za vsak števec te zgrabe vpišemo podatke v bazo preko stored procedure

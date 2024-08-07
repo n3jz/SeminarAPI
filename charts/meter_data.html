@@ -7,11 +7,10 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 <body>
-    <select id="buildingSelect" onchange="loadMeters(this.value)"></select>
+    <select id="buildingSelect"></select> <!-- Removed inline JavaScript -->
     <div id="meterButtons"></div> <!-- Container for meter buttons -->
     <div id="powerChart"></div>
     <div id="energyChart"></div>
-
 
     <script src="JS/meter_data.js" defer></script> <!-- Your JavaScript file -->
 </body>

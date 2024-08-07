@@ -1,24 +1,22 @@
 document.addEventListener('DOMContentLoaded', function() {
     const buildingSelect = document.getElementById('buildingSelect');
     const meterButtons = document.getElementById('meterButtons');
-    const chartCanvas = document.getElementById('chart');
 
-    // Initial fetch to load buildings and their meters
+    // Initialize the building data and set up event listeners
     init();
-
-    // Event listener for changing buildings
-    buildingSelect.addEventListener('change', function() {
-        loadMeters(this.value);
-    });
 
     function init() {
         fetch('/charts/JS/fetch_buildings_and_meters.php')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 populateBuildingSelect(data);
-                // Automatically load meters for the first building if any
                 if (data.length > 0) {
-                    loadMeters(data[0].building_id);
+                    loadMeters(data[0].building_id);  // Load meters for the first building initially
                 }
             })
             .catch(error => {
@@ -28,26 +26,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function populateBuildingSelect(data) {
-        buildingSelect.innerHTML = ''; // Clear previous entries
+        buildingSelect.innerHTML = '';
         data.forEach(building => {
             let option = document.createElement('option');
             option.value = building.building_id;
             option.textContent = building.building_name;
             buildingSelect.appendChild(option);
         });
+        buildingSelect.addEventListener('change', function() {
+            loadMeters(this.value);
+        });
     }
 
     function loadMeters(buildingId) {
-        // Find the selected building's data
-        fetch('/charts/JS/fetch_buildings_and_meters.php')
+        fetch(`/charts/JS/fetch_buildings_and_meters.php?building_id=${buildingId}`)
             .then(response => response.json())
             .then(data => {
-                const building = data.find(b => b.building_id == buildingId);
-                meterButtons.innerHTML = ''; // Clear previous buttons
+                const building = data.find(b => b.building_id === buildingId);
+                meterButtons.innerHTML = '';  // Clear previous buttons
                 if (building && building.meters) {
-                    building.meters.forEach(meter => {
-                        createMeterButton(meter);
-                    });
+                    building.meters.forEach(meter => createMeterButton(meter));
                 }
             })
             .catch(error => {
@@ -59,35 +57,30 @@ document.addEventListener('DOMContentLoaded', function() {
     function createMeterButton(meter) {
         let button = document.createElement('button');
         button.textContent = `Load ${meter.meter_name}`;
-        button.classList.add('meter-button'); // Optionally add some styling class
+        button.classList.add('meter-button');
         button.onclick = () => loadMeterData(meter.meter_id);
         meterButtons.appendChild(button);
     }
 
     function loadMeterData(meterId) {
         fetch(`/charts/JS/fetch_meter_data.php?meter_id=${meterId}`)
-        .then(response => response.json())
-        .then(data => {
-            renderChart(data);
-        })
-        .catch(error => console.error('Error loading meter data:', error));
+            .then(response => response.json())
+            .then(data => {
+                renderPowerChart(data);
+                renderEnergyChart(data);
+            })
+            .catch(error => console.error('Error loading meter data:', error));
     }
-    
 
-        
-    function renderChart(data) {
-        const options = {
+    function renderPowerChart(data) {
+        const powerOptions = {
             chart: {
-                type: 'line', // Example: 'line' chart
-                height: '100%',
-                width: '100%'
+                type: 'line',
+                height: '100%'
             },
             series: [{
                 name: 'Average Power',
-                data: data.average_power.map(item => ({x: item.timestamp, y: item.average_power}))
-            }, {
-                name: 'Total Energy',
-                data: data.total_energy.map(item => ({x: item.timestamp, y: item.total_energy}))
+                data: data.average_power.map(item => ({x: new Date(item.timestamp), y: item.average_power}))
             }],
             xaxis: {
                 type: 'datetime',
@@ -95,27 +88,49 @@ document.addEventListener('DOMContentLoaded', function() {
                     text: 'Timestamp'
                 }
             },
-            yaxis: [{
+            yaxis: {
                 title: {
                     text: 'Average Power (Watts)'
                 }
-            }, {
-                opposite: true,
-                title: {
-                    text: 'Total Energy (kWh)'
-                }
-            }],
+            },
             tooltip: {
-                shared: true,
-                intersect: false,
                 x: {
                     format: 'dd MMM yyyy HH:mm'
                 }
             }
         };
+        var powerChart = new ApexCharts(document.querySelector("#powerChart"), powerOptions);
+        powerChart.render();
+    }
 
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
-        chart.render();
+    function renderEnergyChart(data) {
+        const energyOptions = {
+            chart: {
+                type: 'line',
+                height: '100%'
+            },
+            series: [{
+                name: 'Total Energy',
+                data: data.total_energy.map(item => ({x: new Date(item.timestamp), y: item.total_energy}))
+            }],
+            xaxis: {
+                type: 'datetime',
+                title: {
+                    text: 'Timestamp'
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Total Energy (kWh)'
+                }
+            },
+            tooltip: {
+                x: {
+                    format: 'dd MMM yyyy HH:mm'
+                }
+            }
+        };
+        var energyChart = new ApexCharts(document.querySelector("#energyChart"), energyOptions);
+        energyChart.render();
     }
 });
-

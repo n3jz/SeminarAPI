@@ -18,14 +18,6 @@ select {
     border: 1px solid #ccc;
 }
 
-#chart {
-    
-    width: 90vw;
-    height: 60vh;
-    margin: auto;
-}
-
-
 #meterButtons button {
     padding: 10px;
     margin: 5px;
@@ -38,6 +30,13 @@ select {
 
 #meterButtons button:hover {
     background-color: #0056b3;
+}
+
+
+#powerChart, #energyChart {
+    max-width: 650px;
+    margin: 35px auto;
+      
 }
 
 /* Add more styles as needed */
