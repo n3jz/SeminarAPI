@@ -16,11 +16,11 @@ document.addEventListener('DOMContentLoaded', function() {
     vnosKonciDatum.value = oblikujDatum(zdaj);
     vnosZacetniDatum.value = oblikujDatum(vceraj);
 
-    // Spremenljivke za shranjevanje instanc grafov
+    // Spremenljivke za shranjevanje intanc grafov
     var instancaGrafaMoci = null;
     var instancaGrafaEnergije = null;
 
-    // Funkcija za inicializacijo podatkov in nastavitev listenerjev
+    // Funkcja za inicailizacijo podatkov in nastavitev listenerjev
     function init() {
         naloziStavbeInStevce();
     }
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var gumb = document.createElement('button');
         gumb.textContent = 'Merilnik: ' + stevec.meter_name;
         gumb.className = 'gumb-stevec';
-        gumb.dataset.meterId = stevec.meter_id; // Shranjevanje meter_id v data atributu
+        gumb.dataset.meterId = stevec.meter_id; // Shranjvanje meter_id v data atributu
         gumb.addEventListener('click', function() {
             naloziPodatkeStevca(stevec.meter_id);
         });

@@ -15,7 +15,7 @@ $token = $_GET['token'];
 // Validate the token
 if ($token !== $valid_token) {
     echo json_encode(["status" => "error", "message" => "Invalid token"]);
-    http_response_code(401); /
+    http_response_code(401); 
     exit();
 }
 
