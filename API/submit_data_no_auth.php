@@ -1,43 +1,24 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php';
-
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
-
 header('Content-Type: application/json');
 
-$secret_key = "moja_skrivnost"; // Secret key for encoding/decoding JWT
-$algorithm = "HS256"; // Algorithm used for JWT
+$valid_token = 'BAC'; // token za avtentikacijo
 
-// Get Authorization header
-$headers = getallheaders();
-
-if (!isset($headers['Authorization'])) {
-    echo json_encode([
-        "status" => "error",
-        "message" => "No token provided",
-        "received_headers" => $headers
-    ]);
-    http_response_code(401);
+// Preveri token
+if (!isset($_GET['token'])) {
+    echo json_encode(["status" => "error", "message" => "No token provided"]);
+    http_response_code(401); 
     exit();
 }
 
-// Extract the token from the "Authorization" header
-$authHeader = $headers['Authorization'];
-$token = str_replace('Bearer ', '', $authHeader);
+$token = $_GET['token'];
 
-try {
-    // Decode the token
-    $decoded = JWT::decode($token, new Key($secret_key, $algorithm));
-
-    // You can optionally validate the claims in $decoded, like exp (expiration time)
-} catch (Exception $e) {
+// Validate the token
+if ($token !== $valid_token) {
     echo json_encode(["status" => "error", "message" => "Invalid token"]);
-    http_response_code(401);
+    http_response_code(401); 
     exit();
 }
 
-// Database connection and processing code...
 $servername = "localhost";
 $username = "web_login";
 $password = "-2YFqU.oK8[C_7Sn";

@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function naloziStavbeInStevce() {
         try {
-            var odgovor = await fetch('/charts/JS/fetch_buildings_and_meters.php');
+            var odgovor = await fetch('/API/fetch_buildings_and_meters.php');
             if (!odgovor.ok) {
                 throw new Error('Odgovor omrezja ni ok');
             }
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function naloziStevce(buildingId) {
         try {
-            var odgovor = await fetch('/charts/JS/fetch_buildings_and_meters.php?building_id=' + buildingId);
+            var odgovor = await fetch('/API/fetch_buildings_and_meters.php?building_id=' + buildingId);
             var podatki = await odgovor.json();
             var stavba = podatki.find(function(b) {
                 return b.building_id === buildingId;
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Pridobivanje podatkov za meter_id: ' + meterId + ', zacetni_datum: ' + zacetniDatum + ', konci_datum: ' + konciDatum);
 
         try {
-            var odgovor = await fetch('/charts/JS/fetch_meter_data.php?meter_id=' + meterId + '&start_date=' + encodeURIComponent(zacetniDatum) + '&end_date=' + encodeURIComponent(konciDatum));
+            var odgovor = await fetch('/API/fetch_meter_data.php?meter_id=' + meterId + '&start_date=' + encodeURIComponent(zacetniDatum) + '&end_date=' + encodeURIComponent(konciDatum));
             var podatki = await odgovor.json();
 
             // Unici obstojece grafe pred ponovnim risanjem
