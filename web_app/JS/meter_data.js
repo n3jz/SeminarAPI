@@ -24,12 +24,26 @@ document.addEventListener('DOMContentLoaded', function() {
     function init() {
         naloziStavbeInStevce();
     }
-
     async function naloziStavbeInStevce() {
+        const token = localStorage.getItem('token'); // Pridobivanje žetona iz localStorage
+    
+        if (!token) {
+            alert('Za ogled teh podatkov morate biti prijavljeni.');
+            window.location.href = '/index.html'; // Preusmeritev na prijavno stran, če žeton ni najden
+            return;
+        }
+    
         try {
-            var odgovor = await fetch('/API/fetch_buildings_and_meters.php');
+            var odgovor = await fetch('/API/fetch_buildings_and_meters.php', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token, // Vključitev žetona v Authorization glavo
+                    'Content-Type': 'application/json'
+                }
+            });
+    
             if (!odgovor.ok) {
-                throw new Error('Odgovor omrezja ni ok');
+                throw new Error('Odgovor omrežja ni ok');
             }
             var podatki = await odgovor.json();
             izpolniIzborStavb(podatki);
@@ -57,12 +71,28 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function naloziStevce(buildingId) {
+        const token = localStorage.getItem('token'); // Pridobivanje žetona iz localStorage
+    
+        if (!token) {
+            alert('Za ogled teh podatkov morate biti prijavljeni.');
+            window.location.href = '/index.html'; // Preusmeritev na prijavno stran, če žeton ni najden
+            return;
+        }
+    
         try {
-            var odgovor = await fetch('/API/fetch_buildings_and_meters.php?building_id=' + buildingId);
+            var odgovor = await fetch('../../API/fetch_buildings_and_meters.php?building_id=' + buildingId, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token, // Vključitev žetona v Authorization glavo
+                    'Content-Type': 'application/json'
+                }
+            });
+    
             var podatki = await odgovor.json();
             var stavba = podatki.find(function(b) {
                 return b.building_id === buildingId;
             });
+    
             var gumbiStevcov = document.getElementById('meterButtons');
             gumbiStevcov.innerHTML = '';
             if (stavba && stavba.meters) {
@@ -91,13 +121,27 @@ document.addEventListener('DOMContentLoaded', function() {
     async function naloziPodatkeStevca(meterId) {
         var zacetniDatum = vnosZacetniDatum.value;
         var konciDatum = vnosKonciDatum.value;
-
+    
         console.log('Pridobivanje podatkov za meter_id: ' + meterId + ', zacetni_datum: ' + zacetniDatum + ', konci_datum: ' + konciDatum);
-
+    
+        const token = localStorage.getItem('token'); // Pridobivanje žetona iz localStorage
+    
+        if (!token) {
+            alert('Za ogled teh podatkov morate biti prijavljeni.');
+            window.location.href = '/index.html'; // Preusmeritev na prijavno stran, če žeton ni najden
+            return;
+        }
+    
         try {
-            var odgovor = await fetch('/API/fetch_meter_data.php?meter_id=' + meterId + '&start_date=' + encodeURIComponent(zacetniDatum) + '&end_date=' + encodeURIComponent(konciDatum));
+            var odgovor = await fetch('/API/fetch_meter_data.php?meter_id=' + meterId + '&start_date=' + encodeURIComponent(zacetniDatum) + '&end_date=' + encodeURIComponent(konciDatum), {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token, // Vključitev žetona v Authorization glavo
+                    'Content-Type': 'application/json'
+                }
+            });
             var podatki = await odgovor.json();
-
+    
             // Unici obstojece grafe pred ponovnim risanjem
             if (instancaGrafaMoci) {
                 instancaGrafaMoci.destroy();
@@ -105,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (instancaGrafaEnergije) {
                 instancaGrafaEnergije.destroy();
             }
-
+    
             // Nariši nove grafe
             instancaGrafaMoci = narisiGrafMoci(podatki);
             instancaGrafaEnergije = narisiGrafEnergije(podatki);
@@ -113,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Napaka pri nalaganju podatkov stevca:', napaka);
         }
     }
+    
 
     function narisiGraf(kontejnerId, nastavitve) {
         var graf = new ApexCharts(document.querySelector(kontejnerId), nastavitve);

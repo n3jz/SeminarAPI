@@ -2,14 +2,13 @@
 
 session_start();
 
-// Preveri, če uporabnik ni prijavljen
-if (!isset($_SESSION['username'])) {
-    header("Location: /index.html");
-    exit();
-}
-
 // Nastavitve za CORS in vsebino
 header('Content-Type: application/json');
+
+// Vključite Composerjev autoloader za JWT knjižnico
+require __DIR__ . '/../vendor/autoload.php';
+use \Firebase\JWT\JWT;
+use \Firebase\JWT\Key;
 
 // Povezava z bazo
 $servername = "localhost";
@@ -23,6 +22,39 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     error_log("Povezava ni uspela: " . $conn->connect_error);
     die("Povezava ni uspela");
+}
+
+// Pridobi JWT žeton iz Authorization glave
+$headers = apache_request_headers();
+
+if (!isset($headers['Authorization'])) {
+    http_response_code(401);
+    echo json_encode(array("message" => "Manjkajoča Authorization glava."));
+    exit();
+}
+
+$authHeader = $headers['Authorization'];
+list($jwt) = sscanf($authHeader, 'Bearer %s');
+
+if (!$jwt) {
+    http_response_code(401);
+    echo json_encode(array("message" => "Manjkajoč JWT žeton."));
+    exit();
+}
+
+// Skrivni ključ za dekodiranje JWT
+$key = "moja_skrivnost"; // Poskrbite, da je to močan in varen ključ
+
+try {
+    // Dekodiraj JWT žeton
+    $decoded = JWT::decode($jwt, new Key($key, 'HS256'));
+
+    // Če je dekodiranje uspešno, nadaljuj s poizvedbo v bazo
+} catch (Exception $e) {
+    // Če je napaka pri dekodiranju JWT
+    http_response_code(401);
+    echo json_encode(array("message" => "Neveljaven ali potekel JWT žeton."));
+    exit();
 }
 
 // Pridobi parametre iz URL-ja

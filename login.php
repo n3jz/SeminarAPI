@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (password_verify($password, $user['password'])) {
                 // Geslo je pravilno, ustvari sejo
                 $_SESSION['username'] = $username;
-                header("Location: /charts/meter_data.php");  // Preusmeri na drugo stran
+                header("Location: /web_app/meter_data.html");  // Preusmeri na drugo stran
                 exit();
             } else {
                 echo "<p>Geslo ni pravilno.</p>";
