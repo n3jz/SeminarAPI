@@ -59,13 +59,13 @@ if (!empty($data->username) && !empty($data->password)) {
         } else {
             // Invalid password
             http_response_code(401);
-            echo json_encode(array("message" => "Login failed. Invalid username or password."));
+            echo json_encode(array("message" => "Geslo ni pravilno."));
             exit();
         }
     } else {
         // User not found
         http_response_code(401);
-        echo json_encode(array("message" => "Login failed. Invalid username or password."));
+        echo json_encode(array("message" => "Uporabnik ni najden."));
         exit();
     }
 
@@ -75,7 +75,7 @@ if (!empty($data->username) && !empty($data->password)) {
 } else {
     // Invalid request, missing username or password
     http_response_code(400);
-    echo json_encode(array("message" => "Login failed. Data is incomplete."));
+    echo json_encode(array("message" => "Manjkajoči podatki."));
     exit();
 }
 ?>

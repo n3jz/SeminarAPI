@@ -71,7 +71,7 @@ foreach ($input['meters'] as $meter) {
 
     // Execute the stored procedure and return the response
     if ($stmt->execute()) {
-        array_push($results, array("meter" => $p_meter_name, "status" => "successfully added"));
+        array_push($results, array("meter" => $p_meter_name, "status" => "200"));
     } else {
         array_push($results, array("meter" => $p_meter_name, "status" => "failure", "Error" => $stmt->error));
     }
