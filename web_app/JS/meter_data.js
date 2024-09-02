@@ -1,4 +1,46 @@
+// Preverimo dostop do strani
+async function checkLogin() {
+    const token = localStorage.getItem('token'); // Žeton je shranjen v localStorage
+
+    if (!token) {
+        alert("You need to login first!");
+        window.location.href = 'login.html'; // Preusmeritev na prijavno stran, če žeton ni najden
+        return;
+    }
+
+    try {
+        const response = await fetch('/../API/check_login.php', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json();
+
+        if (!result.status) {
+            alert(result.message);
+            window.location.href = '/../index.html'; // Preusmeritev na prijavno stran, če žeton ni veljaven
+        } else {
+            console.log("Dostop do strani je dovoljen.");
+            inicailizacija(); // Nadaljujemo izvajanje, če je dostop dovoljen
+        }
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        alert("Napaka pri preverjanju prijave. Poskusite znova.");
+        window.location.href = '/../index.html'; // Preusmeritev na prijavno stran ob napaki
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    checkLogin(); // Call checkLogin when the DOM is fully loaded
+});
+
+function inicailizacija() {
     // Zacetni in koncni datum
     var vnosKonciDatum = document.getElementById('endDate');
     var vnosZacetniDatum = document.getElementById('startDate');
@@ -20,10 +62,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var instancaGrafaMoci = null;
     var instancaGrafaEnergije = null;
 
-    // Funkcja za inicailizacijo podatkov in nastavitev listenerjev
-    function init() {
-        naloziStavbeInStevce();
-    }
+    naloziStavbeInStevce(); // Inicailizacija podatkov
+
+    // Funkcija za nalaganje stavb in stevcev
     async function naloziStavbeInStevce() {
         const token = localStorage.getItem('token'); // Pridobivanje žetona iz localStorage
     
@@ -80,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     
         try {
-            var odgovor = await fetch('../../API/fetch_buildings_and_meters.php?building_id=' + buildingId, {
+            var odgovor = await fetch('/API/fetch_buildings_and_meters.php?building_id=' + buildingId, {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + token, // Vključitev žetona v Authorization glavo
@@ -157,7 +198,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Napaka pri nalaganju podatkov stevca:', napaka);
         }
     }
-    
 
     function narisiGraf(kontejnerId, nastavitve) {
         var graf = new ApexCharts(document.querySelector(kontejnerId), nastavitve);
@@ -194,6 +234,4 @@ document.addEventListener('DOMContentLoaded', function() {
             naloziPodatkeStevca(meterId);
         }
     });
-
-    init();
-});
+}

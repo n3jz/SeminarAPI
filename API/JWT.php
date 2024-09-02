@@ -1,5 +1,4 @@
 <?php
-
 //Skripta služi za generiranje JWT žetona za strežnik ki pošilja podatke o porabi energije
 
 // Prikaz napak

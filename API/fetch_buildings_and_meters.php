@@ -1,5 +1,4 @@
 <?php
-session_start();
 
 // Vključite Composerjev autoloader za JWT knjižnico
 require __DIR__ . '/../vendor/autoload.php';

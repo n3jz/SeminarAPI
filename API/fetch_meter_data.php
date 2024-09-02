@@ -1,7 +1,5 @@
 <?php
 
-session_start();
-
 // Nastavitve za CORS in vsebino
 header('Content-Type: application/json');
 
