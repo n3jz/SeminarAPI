@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 // Database credentials
 $servername = getenv('DB_SERVERNAME');
-$dbusername = etenv('DB_USERNAME');
+$dbusername = getenv('DB_USERNAME');
 $dbpassword = getenv('DB_PASSWORD'); 
 $dbname = getenv('DB_NAME');
 

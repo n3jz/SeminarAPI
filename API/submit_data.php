@@ -7,7 +7,7 @@ use Firebase\JWT\Key;
 header('Content-Type: application/json');
 
 $secret_key = "moja_skrivnost"; // Secret key for encoding/decoding JWT
-$algorithm = "HS256"; // Algorithm used for JWT
+$algorithm = "HS256"; 
 
 // Get Authorization header
 $headers = getallheaders();
@@ -22,12 +22,12 @@ if (!isset($headers['Authorization'])) {
     exit();
 }
 
-// Extract the token from the "Authorization" header
+// Token dobimo iz headerja
 $authHeader = $headers['Authorization'];
 $token = str_replace('Bearer ', '', $authHeader);
 
 try {
-    // Decode the token
+    // Dekodiramo token
     $decoded = JWT::decode($token, new Key($secret_key, $algorithm));
 
     // You can optionally validate the claims in $decoded, like exp (expiration time)
@@ -37,13 +37,12 @@ try {
     exit();
 }
 
-// Database connection and processing code...
+//Povezava z bazo
 $servername = getenv('DB_SERVERNAME');
 $username = getenv('DB_USERNAME');
 $password = getenv('DB_PASSWORD');
 $dbname = getenv('DB_NAME');
 
-// Create a connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
@@ -54,12 +53,12 @@ if ($conn->connect_error) {
 $inputJSON = file_get_contents('php://input');
 $input = json_decode($inputJSON, true);
 
-// In one request, send data for only one building.
+// Vsakič procesiramo samo eno stavbo
 $p_building_name = $input['building_name'];
 $p_building_location = $input['building_location'];
 $results = [];
 
-// For each meter of this building, insert data into the database via a stored procedure
+// Z uporabo stored procedure dodamo vsako stavbo
 foreach ($input['meters'] as $meter) {
     $p_meter_name = $meter['meter_name'];
     $p_timestamp = $meter['timestamp'];
@@ -69,7 +68,7 @@ foreach ($input['meters'] as $meter) {
     $stmt = $conn->prepare("CALL AddBuildingWithMeter(?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("ssssdd", $p_building_name, $p_building_location, $p_meter_name, $p_timestamp, $p_average_power, $p_total_energy);
 
-    // Execute the stored procedure and return the response
+    // Poskusimo izvesti stored procedure
     if ($stmt->execute()) {
         array_push($results, array("meter" => $p_meter_name, "status" => "200"));
     } else {
@@ -80,6 +79,6 @@ foreach ($input['meters'] as $meter) {
 
 $conn->close();
 
-// Return statuses for each meter
+// Vrnemo rezultate
 echo json_encode($results);
 ?>
