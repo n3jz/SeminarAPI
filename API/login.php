@@ -50,30 +50,28 @@ if (!empty($data->username) && !empty($data->password)) {
             // Generate JWT
             $jwt = JWT::encode($payload, $key, 'HS256');
 
-            // Return the token in the response body
+            
             echo json_encode(array(
-                "message" => "Successful login.",
+                "message" => "Prijava uspela.",
                 "token" => $jwt
             ));
             exit();
         } else {
-            // Invalid password
+            
             http_response_code(401);
             echo json_encode(array("message" => "Geslo ni pravilno."));
             exit();
         }
     } else {
-        // User not found
         http_response_code(401);
         echo json_encode(array("message" => "Uporabnik ni najden."));
         exit();
     }
 
-    // Close statement and connection
     $stmt->close();
     $conn->close();
 } else {
-    // Invalid request, missing username or password
+    
     http_response_code(400);
     echo json_encode(array("message" => "Manjkajoči podatki."));
     exit();
