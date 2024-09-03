@@ -1,34 +1,33 @@
 <?php
-// Include the Composer autoloader
+
 require __DIR__ . '/../vendor/autoload.php';
 use \Firebase\JWT\JWT;
 
 header('Content-Type: application/json');
 
-// Database credentials
+// Prijava v bazo
 $servername = getenv('DB_SERVERNAME');
 $dbusername = getenv('DB_USERNAME');
 $dbpassword = getenv('DB_PASSWORD'); 
 $dbname = getenv('DB_NAME');
 
-// Create connection
+// povezava z bazo
 $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Your secret key for JWT
-$key = "moja_skrivnost"; // Use a strong secret key
+// Skrivni ključ za JWT
+$key = "moja_skrivnost"; 
 $issued_at = time();
-$expiration_time = $issued_at + 3600; // JWT valid for 1 hour
+$expiration_time = $issued_at + 3600; // 1 hour
 
 // Get the POST data
 $data = json_decode(file_get_contents("php://input"));
 
 if (!empty($data->username) && !empty($data->password)) {
-    // Prepare SQL statement to find the user
+    // Pripravimo poizvedbo za uporabnika
     $stmt = $conn->prepare("SELECT username, password FROM users WHERE username = ?");
     $stmt->bind_param("s", $data->username);
     $stmt->execute();
