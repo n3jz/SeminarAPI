@@ -38,10 +38,10 @@ try {
 }
 
 // Database connection and processing code...
-$servername = "localhost";
-$username = "web_login";
-$password = "-2YFqU.oK8[C_7Sn";
-$dbname = "em";
+$servername = getenv('DB_SERVERNAME');
+$username = getenv('DB_USERNAME');
+$password = getenv('DB_PASSWORD');
+$dbname = getenv('DB_NAME');
 
 // Create a connection
 $conn = new mysqli($servername, $username, $password, $dbname);

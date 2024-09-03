@@ -3,11 +3,13 @@
 require __DIR__ . '/../vendor/autoload.php';
 use \Firebase\JWT\JWT;
 
+header('Content-Type: application/json');
+
 // Database credentials
-$servername = "localhost";
-$dbusername = "web_login"; 
-$dbpassword = "-2YFqU.oK8[C_7Sn"; 
-$dbname = "em";
+$servername = getenv('DB_SERVERNAME');
+$dbusername = etenv('DB_USERNAME');
+$dbpassword = getenv('DB_PASSWORD'); 
+$dbname = getenv('DB_NAME');
 
 // Create connection
 $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);

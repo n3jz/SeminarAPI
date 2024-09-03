@@ -9,10 +9,10 @@ use \Firebase\JWT\JWT;
 use \Firebase\JWT\Key;
 
 // Povezava z bazo
-$servername = "localhost";
-$username = "web_login";
-$password = "-2YFqU.oK8[C_7Sn";
-$dbname = "em";
+$servername = getenv('DB_SERVERNAME');
+$username = getenv('DB_USERNAME');
+$password = getenv('DB_PASSWORD');
+$dbname = getenv('DB_NAME');
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
